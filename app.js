@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 require('./cron/remainder');
+const path = require('path');
 
 const admin = require("./config/firebaseAdmin");
 
@@ -27,31 +28,31 @@ app.use((req, res, next) => {
   next();
 });
 
-const deviceToken = "fs6LklhRR5ez1fT3UisHan:APA91bHQt8obhk_-yCVMo_h7leSf0mQFyD6M2wnHXwp698BB6ujKorg-KGOEqdVuMzPuNmrYU3ZZ6t-hA5HkjpzJkE_MkY8Fwr-o2D9yR0R7p4joPZQS_cQ";
+// const deviceToken = "fs6LklhRR5ez1fT3UisHan:APA91bHQt8obhk_-yCVMo_h7leSf0mQFyD6M2wnHXwp698BB6ujKorg-KGOEqdVuMzPuNmrYU3ZZ6t-hA5HkjpzJkE_MkY8Fwr-o2D9yR0R7p4joPZQS_cQ";
 
-app.get("/api/test-push", async (req, res) => {
-  try {
-    const response = await admin.messaging().send({
-      token: deviceToken,
-      notification: {
-        title: "Test Notification",
-        body: "If you see this, push works!",
-      },
-      android: {
-        priority: "high",
-        notification: {
-          channelId: "default",
-        },
-      },
-    });
+// app.get("/api/test-push", async (req, res) => {
+//   try {
+//     const response = await admin.messaging().send({
+//       token: deviceToken,
+//       notification: {
+//         title: "Test Notification",
+//         body: "If you see this, push works!",
+//       },
+//       android: {
+//         priority: "high",
+//         notification: {
+//           channelId: "default",
+//         },
+//       },
+//     });
 
-    console.log("Push response:", response);
-    res.send("Push sent successfully");
-  } catch (error) {
-    console.error("Push error:", error);
-    res.status(500).send(error.message);
-  }
-});
+//     console.log("Push response:", response);
+//     res.send("Push sent successfully");
+//   } catch (error) {
+//     console.error("Push error:", error);
+//     res.status(500).send(error.message);
+//   }
+// });
 
 app.use("/api/auth", authRoutes);
 app.use(authenticateToken)
@@ -64,7 +65,7 @@ app.use("/api/history", historyRoutes);
 app.use("/api/reminders", reminderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
