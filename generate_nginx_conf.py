@@ -17,7 +17,7 @@ server {{
     }}
 
     location / {{
-        proxy_pass http://127.0.0.1:{port};
+        proxy_pass http://localhost:{port};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
