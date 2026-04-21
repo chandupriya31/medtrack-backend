@@ -2,7 +2,7 @@ module.exports = {
     apps: [
         {
             name: "MEDTRACK",
-            script: "./bin/www",
+            script: "app.js",
             instances: 1,
             exec_mode: "cluster",
             watch: false,
