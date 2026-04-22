@@ -1,35 +1,38 @@
 const db = require("../db");
-const crypto = require("crypto");
 
 const UserModel = {
-
   getByEmail: async (email) => {
-    return await db("users")
-      .where({ email })
-      .first();
+    return await db("users").where({ email }).first();
   },
 
-  create: async ({ name, email, hashedPassword , device_token }) => {
-
+  create: async ({ name, email, hashedPassword, device_token }) => {
     const user = await db("users")
       .insert({
         name,
         email,
         password: hashedPassword,
-        device_token
+        device_token,
+        is_verified: false,
       })
       .returning(["user_id", "name", "email", "device_token"]);
 
     return user[0];
   },
 
+  storeOtp: async (email, hashedOtp, expiryTime) => {
+    await db("users").where({ email }).update({
+      reset_token: hashedOtp,
+      reset_token_expiry: expiryTime,
+    });
+  },
+
+
+
   storeResetToken: async (email, hashedToken, expiryTime) => {
-    await db("users")
-      .where({ email })
-      .update({
-        reset_token: hashedToken,
-        reset_token_expiry: expiryTime
-      });
+    await db("users").where({ email }).update({
+      reset_token: hashedToken,
+      reset_token_expiry: expiryTime,
+    });
   },
 
   getByResetToken: async (hashedToken) => {
@@ -40,15 +43,12 @@ const UserModel = {
   },
 
   updatePassword: async (hashedPassword, hashedToken) => {
-    await db("users")
-      .where({ reset_token: hashedToken })
-      .update({
-        password: hashedPassword,
-        reset_token: null,
-        reset_token_expiry: null
-      });
-  }
-
+    await db("users").where({ reset_token: hashedToken }).update({
+      password: hashedPassword,
+      reset_token: null,
+      reset_token_expiry: null,
+    });
+  },
 };
 
 module.exports = UserModel;

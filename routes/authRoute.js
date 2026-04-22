@@ -9,6 +9,15 @@ router.post("/refresh", authController.refreshToken);
 
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password", authController.resetPassword);
+router.post("/verify-email", authController.verifyEmail);
+
+router.get("/forgot-password-page", (req, res) => {
+    res.render("forgot-password");
+});
+
+
+router.get("/reset-password-page", (req, res) => {
+    res.render("reset-password");
+});
 
 module.exports = router;
-
