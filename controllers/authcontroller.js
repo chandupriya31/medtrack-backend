@@ -90,6 +90,22 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const newToken = generateAccessToken({
+      user_id: decoded.user_id,
+      email: decoded.email,
+    });
+
+    res.json({ accessToken: newToken });
+  } catch {
+    res.status(403).json({ message: "Invalid refresh token" });
+  }
+};
 
 exports.forgotPassword = async (req, res) => {
   try {
