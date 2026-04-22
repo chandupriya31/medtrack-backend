@@ -1,0 +1,88 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #dfe9f3, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 14px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+h2 {
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #4CAF50;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+.secondary {
+  background: #888;
+}
+
+.secondary:hover {
+  background: #666;
+}
+
+.otp-box {
+  font-size: 26px;
+  letter-spacing: 8px;
+  background: #f3f3f3;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.otp-input {
+  text-align: center;
+  font-size: 20px;
+  letter-spacing: 5px;
+}
+
+.small {
+  font-size: 12px;
+  color: #888;
+}
+
+.email {
+  font-weight: bold;
+  color: #333;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+}
+
+.success {
+  color: green;
+  font-size: 14px;
+}

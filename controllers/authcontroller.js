@@ -8,7 +8,7 @@ const UserModel = require("../models/authModel");
 const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
 
 
-async function sendMail(to, subject, text) {
+async function sendMail(to, subject, otp) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -17,13 +17,51 @@ async function sendMail(to, subject, text) {
     },
   });
 
+  const html = `
+  <div style="font-family: Arial; background:#f4f6f8; padding:20px;">
+    <div style="max-width:500px; margin:auto; background:#fff; padding:25px; border-radius:10px;">
+      
+      <h2 style="color:#333;">Verify Your Account</h2>
+
+      <p>Use the OTP below to continue:</p>
+
+      <div style="
+        font-size:28px;
+        letter-spacing:6px;
+        font-weight:bold;
+        text-align:center;
+        background:#f1f1f1;
+        padding:15px;
+        border-radius:8px;
+        margin:20px 0;">
+        ${otp}
+      </div>
+
+      <p style="font-size:13px; color:#777;">
+        This OTP is valid for 10 minutes.
+      </p>
+
+      <p style="font-size:13px; color:#777;">
+        If you didn’t request this, ignore this email.
+      </p>
+
+      <hr/>
+
+      <p style="font-size:12px; color:#aaa;">
+        © 2026 medtrack
+      </p>
+
+    </div>
+  </div>
+  `;
+
   await transporter.sendMail({
+    from: `"HealthMate" <${process.env.EMAIL_USER}>`,
     to,
     subject,
-    html: `<p>${text}</p>`,
+    html,
   });
 }
-
 
 exports.register = async (req, res) => {
   try {
@@ -57,7 +95,7 @@ exports.register = async (req, res) => {
     await sendMail(
       email,
       "Verify your account",
-      `Your OTP is: ${otp}`
+      `Your OTP is : ${otp}`
     );
 
     res.json({ message: "OTP sent to email" });
