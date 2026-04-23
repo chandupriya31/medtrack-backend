@@ -19,5 +19,6 @@ router.get("/forgot-password-page", (req, res) => {
 router.get("/reset-password-page", (req, res) => {
     res.render("reset-password");
 });
-
+router.post("/resend-otp", authController.resendOtp);
+router.post("/verify-reset-otp", authController.verifyResetOtp);
 module.exports = router;

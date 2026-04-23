@@ -92,11 +92,7 @@ exports.register = async (req, res) => {
       reset_token: hashedOtp,
       reset_token_expiry: expiryTime,
     });
-    await sendMail(
-      email,
-      "Verify your account",
-      `Your OTP is : ${otp}`
-    );
+await sendMail(email, "Verify your account", otp);
 
     res.json({ message: "OTP sent to email" });
 
@@ -181,6 +177,62 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+exports.resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await UserModel.getByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+
+    const hashedOtp = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    const expiryTime = new Date(Date.now() + 10 * 60 * 1000);
+
+    await UserModel.storeOtp(email, hashedOtp, expiryTime);
+
+    await sendMail(email, "Verify your account", otp);
+
+    res.json({ message: "OTP resent successfully" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.verifyResetOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    const user = await db("users")
+      .where({ email, reset_token: hashedToken })
+      .andWhere("reset_token_expiry", ">", db.fn.now())
+      .first();
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    res.json({ message: "OTP verified" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -218,12 +270,7 @@ exports.forgotPassword = async (req, res) => {
 
     await UserModel.storeResetToken(email, hashedToken, expiryTime);
 
-    await sendMail(
-      email,
-      "Password Reset OTP",
-      `Your OTP is: ${token}`
-    );
-
+await sendMail(email, "Password Reset OTP", token);
     res.json({ message: "OTP sent to email" });
 
   } catch (err) {
