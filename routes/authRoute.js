@@ -10,6 +10,8 @@ router.post("/refresh", authController.refreshToken);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password", authController.resetPassword);
 router.post("/verify-email", authController.verifyEmail);
+router.post("/resend-otp", authController.resendOtp);
+router.post("/verify-reset-otp", authController.verifyResetOtp);
 
 router.get("/forgot-password-page", (req, res) => {
     res.render("forgot-password");
