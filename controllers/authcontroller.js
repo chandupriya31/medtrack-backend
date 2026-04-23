@@ -91,8 +91,9 @@ exports.register = async (req, res) => {
       is_verified: false,
       reset_token: hashedOtp,
       reset_token_expiry: expiryTime,
+      email_otp: otp,
     });
-await sendMail(email, "Verify your account", otp);
+    await sendMail(email, "Verify your account", otp);
 
     res.json({ message: "OTP sent to email" });
 
@@ -270,7 +271,7 @@ exports.forgotPassword = async (req, res) => {
 
     await UserModel.storeResetToken(email, hashedToken, expiryTime);
 
-await sendMail(email, "Password Reset OTP", token);
+    await sendMail(email, "Password Reset OTP", token);
     res.json({ message: "OTP sent to email" });
 
   } catch (err) {
