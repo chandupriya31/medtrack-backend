@@ -145,54 +145,24 @@ exports.login = async (req, res) => {
   }
 };
 
-// exports.verifyEmail = async (req, res) => {
-//   try {
-//     const { email, otp } = req.body;
-//     console.log("INPUT OTP:", otp);
-//     console.log("HASHED INPUT:", hashOtp(otp));
-//     const debugUser = await db("users").where({ email }).first();
-//     console.log("DB OTP HASH:", debugUser?.otp_hash);
-//     console.log("DB EXPIRY:", debugUser?.otp_expiry);
-//     console.log("DB TYPE:", debugUser?.otp_type);
-
-//     const user = await UserModel.verifyOtp(
-//       email,
-//       hashOtp(otp),
-//       "verify"
-//     );
-
-//     if (!user)
-//       return res.status(400).json({ message: "Invalid or expired OTP" });
-
-//     await UserModel.markVerified(email);
-
-//     res.json({ message: "Email verified" });
-
-//   } catch (err) {
-//     console.log("VERIFY ERROR:", err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
 exports.verifyEmail = async (req, res) => {
   try {
-    let { email, otp } = req.body;
+    const { email, otp } = req.body;
+    console.log("INPUT OTP:", otp);
+    console.log("HASHED INPUT:", hashOtp(otp));
+    const debugUser = await db("users").where({ email }).first();
+    console.log("DB OTP HASH:", debugUser?.otp_hash);
+    console.log("DB EXPIRY:", debugUser?.otp_expiry);
+    console.log("DB TYPE:", debugUser?.otp_type);
 
-    otp = otp.toString().trim();
+    const user = await UserModel.verifyOtp(
+      email,
+      hashOtp(otp),
+      "verify"
+    );
 
-    const user = await db("users")
-      .where({
-        email,
-        otp_hash: hashOtp(otp),
-        otp_type: "verify",
-      })
-      .andWhere("otp_expiry", ">", new Date())
-      .first();
-
-    if (!user) {
-      console.log("OTP FAIL:", email, otp);
+    if (!user)
       return res.status(400).json({ message: "Invalid or expired OTP" });
-    }
 
     await UserModel.markVerified(email);
 
