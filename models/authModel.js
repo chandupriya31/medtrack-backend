@@ -5,47 +5,59 @@ const UserModel = {
     return await db("users").where({ email }).first();
   },
 
-  create: async ({ name, email, hashedPassword, device_token }) => {
-    const user = await db("users")
+  create: async ({ name, email, password, device_token, otp_hash, otp_expiry, otp_type }) => {
+    const [user] = await db("users")
       .insert({
         name,
         email,
-        password: hashedPassword,
+        password,
         device_token,
         is_verified: false,
+        otp_hash,
+        otp_expiry,
+        otp_type,
       })
-      .returning(["user_id", "name", "email", "device_token"]);
+      .returning(["user_id", "name", "email"]);
 
-    return user[0];
+    return user;
   },
 
-  storeOtp: async (email, otp) => {
+  updateOtp: async (email, otp_hash, otp_expiry, otp_type) => {
     await db("users").where({ email }).update({
-      email_otp: otp,
+      otp_hash,
+      otp_expiry,
+      otp_type,
     });
   },
 
-
-
-  storeResetToken: async (email, hashedToken, expiryTime) => {
-    await db("users").where({ email }).update({
-      reset_token: hashedToken,
-      reset_token_expiry: expiryTime,
-    });
-  },
-
-  getByResetToken: async (hashedToken) => {
+  verifyOtp: async (email, otp_hash, otp_type) => {
     return await db("users")
-      .where("reset_token", hashedToken)
-      .andWhere("reset_token_expiry", ">", db.fn.now())
+      .where({ email, otp_hash, otp_type })
+      .andWhere("otp_expiry", ">", db.fn.now())
       .first();
   },
 
-  updatePassword: async (hashedPassword, hashedToken) => {
-    await db("users").where({ reset_token: hashedToken }).update({
-      password: hashedPassword,
-      reset_token: null,
-      reset_token_expiry: null,
+  markVerified: async (email) => {
+    await db("users").where({ email }).update({
+      is_verified: true,
+      otp_hash: null,
+      otp_expiry: null,
+      otp_type: null,
+    });
+  },
+
+  updatePassword: async (email, password) => {
+    await db("users").where({ email }).update({
+      password,
+      otp_hash: null,
+      otp_expiry: null,
+      otp_type: null,
+    });
+  },
+
+  storeRefreshToken: async (email, token) => {
+    await db("users").where({ email }).update({
+      refresh_token: token,
     });
   },
 };
