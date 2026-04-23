@@ -194,9 +194,9 @@ exports.resendOtp = async (req, res) => {
       .update(otp)
       .digest("hex");
 
-    const expiryTime = new Date(Date.now() + 10 * 60 * 1000);
+    // const expiryTime = new Date(Date.now() + 10 * 60 * 1000);
 
-    await UserModel.storeOtp(email, hashedOtp, expiryTime);
+    await UserModel.storeOtp(email, otp);
 
     await sendMail(email, "Verify your account", otp);
 
@@ -218,7 +218,7 @@ exports.verifyResetOtp = async (req, res) => {
       .digest("hex");
 
     const user = await db("users")
-      .where({ email, reset_token: hashedToken })
+      .where({ email, email_otp: otp })
       .andWhere("reset_token_expiry", ">", db.fn.now())
       .first();
 

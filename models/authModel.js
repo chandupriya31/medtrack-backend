@@ -19,10 +19,9 @@ const UserModel = {
     return user[0];
   },
 
-  storeOtp: async (email, hashedOtp, expiryTime) => {
+  storeOtp: async (email, otp) => {
     await db("users").where({ email }).update({
-      reset_token: hashedOtp,
-      reset_token_expiry: expiryTime,
+      email_otp: otp,
     });
   },
 
